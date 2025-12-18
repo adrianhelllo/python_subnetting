@@ -1,29 +1,16 @@
 import math
 
 def network_query():
-    network_address = input("Please enter a valid IPv4 network address [X.X.X.X/X]: ")
+    network_address = input("Please enter a valid IPv4 network address [x.x.x.x/x]: ")
     while not is_valid_network(network_address):
-        network_address = input("Please enter a valid IPv4 network address [X.X.X.X/X]: ")
+        network_address = input("Please enter a valid IPv4 network address [x.x.x.x/x]: ")
 
 def is_valid_network(address):
-    network_segments = address.split('/')
-    network_bytes = address[0].split('.')
-    network_mask = address[1]
+    pattern = "x.x.x.x/x"
 
-    for byte in network_bytes:
-        if any(not char.isdigit() for char in byte):
-            print("The address should only consist of numbers.")
-            return False
-        if not (0 <= int(byte) <= 255):
-            print("The address must only have bytes between 0 and 255.")
-            return False
-        if len(byte) != 1 and byte[0] == 0:
-            print("Bytes of the address cannot have leading zeros.")
-            return False
-        
-    if not (0 <= network_mask <= 32):
-        print("The CIDR mask value must be between 0 and 32.")
-        return False
+    #Form handling
+    
+    #Byte handling
     
     return True
 
