@@ -34,8 +34,8 @@ def is_valid_network(address):
         print("Correct usage: x.x.x.x/x")
         return False
     if not all(char.isdigit() for char in address[i+1:]): # i+1: step over '/'
-        return False
         print("Correct usage: x.x.x.x/x")
+        return False
 
     mask = return_int(address[i+1:]) # Convert remaining characters to mask
     
