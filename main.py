@@ -22,8 +22,8 @@ def is_valid_network(address):
         return False
     
     i = 0
-    while address[i] != '/':
-        while address[i] != '.':
+    while address[i] != '/' and i < len(address):
+        while address[i] != '.' and i < len(address):
             current_byte.append(address[i])
             i += 1
         i += 1 # Skip over dot
