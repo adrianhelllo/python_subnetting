@@ -19,14 +19,27 @@ def is_valid_network(cidr):
         return False
     return True
 
-def subnet_info_query(subnet_number):
-    ...
+def subnet_info_query():
+    subnets = int(input("Enter the amount of subnets: "))
+    while subnets < 1:
+        int(input("Enter the amount of subnets: "))
+
+    info_table = {}
+    for i in range(subnets):
+        s_name = input(f"Enter the name of subnet {i + 1}: ")
+        s_hosts = int(input("Enter the amount of hosts on subnet {s_name}: "))
+        info_table[s_name] = s_hosts
+    return info_table
+
 
 def calculate_subnet_info(next_available, users, network):
     subnet_info = {}
     
 def main():
-    network_query()
+    net = network_query()
+    subnet_table = subnet_info_query()
+
+    
 
 if __name__ == "__main__":
     main()
