@@ -34,10 +34,10 @@ def mask_calculations(hosts, mask):
     mask_bits = mask + required_bits
     cidr_mask = '/' + str(mask_bits)
     
-    binary_rep = (mask_bits * '1') + ((32 - mask_bits) * 0)
-    binary_mask = [binary_rep[i:i+8] for i in range(len(binary_rep))]
+    binary_rep = (mask_bits * '1') + ((32 - mask_bits) * '0')
+    binary_mask = [binary_rep[i:i+8] for i in range(0, len(binary_rep), 8)]
 
-    decimal_mask = [int(binary_mask[i]) for i in range(len(binary_mask))]
+    decimal_mask = [int(binary_mask[i], 2) for i in range(len(binary_mask))]
     return (cidr_mask, binary_mask, decimal_mask)
 
 def calculate_subnet_info(hosts, mask):
@@ -47,14 +47,30 @@ def calculate_subnet_info(hosts, mask):
     subnet_info["b_mask"] = mask_info[1]
     subnet_info["d_mask"] = mask_info[2]
 
-def calculate_subnet_info(next_available, users, network):
-    subnet_info = {}
+    return subnet_info
     
 def main():
-    net = network_query()
+    net_segments = network_query().split('/')
+    net_bytes = net_segments[0]
+    net_cidr_prefix = int(net_segments[1])
     subnet_table = subnet_info_query()
     print(subnet_table)
+    
+    for subnet, hosts in subnet_table.items():
+        info = calculate_subnet_info(hosts, net_cidr_prefix)
+        print(f"------- Subnet {subnet} ------".center(30))
+        print(f"The CIDR mask prefix: {info['cidr']}")
+        print(f"The binary mask: ", end="")
 
+        for byte in info["b_mask"]:
+            print(byte, end=" ")
+        print()
+
+        print(f"The decimal mask: ", end="")
+
+        for byte in info["d_mask"]:
+            print(byte, end=" ")
+        print()
 
 
 if __name__ == "__main__":
