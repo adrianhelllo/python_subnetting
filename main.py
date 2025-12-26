@@ -26,7 +26,7 @@ def subnet_info_query(taken, parent_cidr):
         s_name = input(f"Enter the name of subnet {i + 1}: ")
         
         s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
-        while s_hosts + 2 > 2 ** (32 - parent_cidr) - taken:
+        while 2 ** (get_cidr(parent_cidr, s_hosts) - 24) > 2 ** (32 - parent_cidr) - taken:
             print("Parent network can not be configured for this many hosts.")
             s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
 
