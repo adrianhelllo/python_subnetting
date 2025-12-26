@@ -16,7 +16,7 @@ def is_valid_network(cidr):
         return False
     return True
 
-def subnet_info_query():
+def subnet_info_query(taken, parent_cidr):
     subnets = int(input("Enter the amount of subnets: "))
     while subnets < 1:
         int(input("Enter the amount of subnets: "))
@@ -24,14 +24,25 @@ def subnet_info_query():
     info_table = {}
     for i in range(subnets):
         s_name = input(f"Enter the name of subnet {i + 1}: ")
+        
         s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
+        while s_hosts + 2 > 2 ** (32 - parent_cidr) - taken:
+            print("Parent network can not be configured for this many hosts.")
+            s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
+
+        taken += get_cidr(parent_cidr, s_hosts)
+
         info_table[s_name] = s_hosts
 
     return info_table
 
-def mask_calculations(hosts, mask):
+def get_cidr(parent_mask, hosts):
     required_bits = math.ceil(math.log2(hosts + 2))
-    mask_bits = mask + required_bits
+    cidr_value = parent_mask + required_bits
+    return cidr_value
+
+def mask_calculations(hosts, parent_mask):
+    mask_bits = get_cidr(parent_mask, hosts)
     cidr_mask = '/' + str(mask_bits)
     
     binary_rep = (mask_bits * '1') + ((32 - mask_bits) * '0')
@@ -53,7 +64,10 @@ def main():
     net_segments = network_query().split('/')
     net_bytes = net_segments[0]
     net_cidr_prefix = int(net_segments[1])
-    subnet_table = subnet_info_query()
+
+    taken = 0
+    subnet_table = subnet_info_query(taken, net_cidr_prefix)
+    
     print(subnet_table)
     
     for subnet, hosts in subnet_table.items():
