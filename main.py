@@ -46,7 +46,7 @@ def subnet_info_query(taken, parent_cidr):
 
 def get_cidr(parent_mask, hosts):
     required_bits = math.ceil(math.log2(hosts + 2))
-    cidr_value = parent_mask + required_bits
+    cidr_value = MASK_BITS - required_bits
     return cidr_value
 
 def mask_calculations(hosts, parent_mask):
