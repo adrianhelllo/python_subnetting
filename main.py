@@ -1,11 +1,12 @@
 import ipaddress
 import math
 
+MASK_BITS = 32
+
 def network_query():
     network_address = input("Please enter a valid IPv4 CIDR address [x.x.x.x/x]: ")
     while not is_valid_network(network_address):
         network_address = input("Please enter a valid IPv4 CIDR network [x.x.x.x/x]: ")
-
     return network_address
 
 def is_valid_network(cidr):
@@ -17,17 +18,21 @@ def is_valid_network(cidr):
     return True
 
 def subnet_info_query(taken, parent_cidr):
-    subnets = int(input("Enter the amount of subnets: "))
+    subnets = int(input("Enter the number of subnets: "))
     while subnets < 1:
-        int(input("Enter the amount of subnets: "))
+        int(input("Enter the number of subnets: "))
 
     info_table = {}
     for i in range(subnets):
         s_name = input(f"Enter the name of subnet {i + 1}: ")
         
-        s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
-        while 2 ** (get_cidr(parent_cidr, s_hosts) - 24) > 2 ** (32 - parent_cidr) - taken:
-            print("Parent network can not be configured for this many hosts.")
+        s_hosts = int(input(f"Enter the number of hosts on subnet {s_name}: "))
+        subnet_capacity = 2 ** (get_cidr(parent_cidr, s_hosts) - parent_cidr) # 2 ** (parent_cidr + req_bits) - parent_cidr -> 2 ** req_bits
+        available = 2 ** (MASK_BITS - parent_cidr) - taken
+        
+        while subnet_capacity > available:
+            print(subnet_capacity, available)
+            print("Parent network can not be configured for a subnet with this number of hosts.")
             s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
 
         taken += get_cidr(parent_cidr, s_hosts)
@@ -42,10 +47,10 @@ def get_cidr(parent_mask, hosts):
     return cidr_value
 
 def mask_calculations(hosts, parent_mask):
-    mask_bits = get_cidr(parent_mask, hosts)
-    cidr_mask = '/' + str(mask_bits)
+    subn_mask_bits = get_cidr(parent_mask, hosts)
+    cidr_mask = '/' + str(subn_mask_bits)
     
-    binary_rep = (mask_bits * '1') + ((32 - mask_bits) * '0')
+    binary_rep = (subn_mask_bits * '1') + ((MASK_BITS - subn_mask_bits) * '0')
     binary_mask = [binary_rep[i:i+8] for i in range(0, len(binary_rep), 8)]
 
     decimal_mask = [int(binary_mask[i], 2) for i in range(len(binary_mask))]
