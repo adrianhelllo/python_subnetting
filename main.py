@@ -29,28 +29,33 @@ def subnet_info_query(taken, parent_cidr):
     info_table = {}
     for i in range(subnets):
         s_name = input(f"Enter the name of subnet {i + 1}: ")
-        
         s_hosts = int(input(f"Enter the number of hosts on subnet {s_name}: "))
-        subnet_capacity = 2 ** (get_cidr(parent_cidr, s_hosts) - parent_cidr) # 2 ** (parent_cidr + req_bits) - parent_cidr -> 2 ** req_bits
+        subnet_capacity = 2 ** subnet_bits(s_hosts)
         available = 2 ** (MASK_BITS - parent_cidr) - taken
         
         while subnet_capacity > available:
+            print(subnet_capacity, available)
             print("Parent network can not be configured for a subnet with this number of hosts.")
+            
             s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
+            subnet_capacity = 2 ** subnet_bits(s_hosts)
+            available = 2 ** (MASK_BITS - parent_cidr) - taken
 
-        taken += get_cidr(parent_cidr, s_hosts)
+        taken += subnet_capacity
 
         info_table[s_name] = s_hosts
 
     return info_table
 
-def get_cidr(parent_mask, hosts):
-    required_bits = math.ceil(math.log2(hosts + 2))
-    cidr_value = MASK_BITS - required_bits
+def subnet_bits(hosts):
+    return math.ceil(math.log2(hosts + 2))
+
+def subnet_cidr(hosts):
+    cidr_value = MASK_BITS - subnet_bits(hosts)
     return cidr_value
 
-def mask_calculations(hosts, parent_mask):
-    subn_mask_bits = get_cidr(parent_mask, hosts)
+def mask_calculations(hosts):
+    subn_mask_bits = subnet_cidr(hosts)
     cidr_mask = '/' + str(subn_mask_bits)
     
     binary_rep = (subn_mask_bits * '1') + ((MASK_BITS - subn_mask_bits) * '0')
@@ -61,7 +66,7 @@ def mask_calculations(hosts, parent_mask):
 
 def calculate_subnet_info(hosts, mask):
     subnet_info = {}
-    mask_info = mask_calculations(hosts, mask)
+    mask_info = mask_calculations(hosts)
     subnet_info["cidr"] = mask_info[0]
     subnet_info["b_mask"] = mask_info[1]
     subnet_info["d_mask"] = mask_info[2]
