@@ -9,9 +9,13 @@ def network_query():
         network_address = input("Please enter a valid IPv4 CIDR network [x.x.x.x/x]: ")
     return network_address
 
-def is_valid_network(cidr):
+def is_valid_network(addr):
+    if '/' not in addr:
+        print("Network address must contain a CIDR prefix")
+        return False
+    
     try:
-        netw_add = ipaddress.IPv4Network(cidr)
+        netw_add = ipaddress.IPv4Network(addr)
     except ValueError:
         print("Correct usage: x.x.x.x/x")
         return False
@@ -31,7 +35,6 @@ def subnet_info_query(taken, parent_cidr):
         available = 2 ** (MASK_BITS - parent_cidr) - taken
         
         while subnet_capacity > available:
-            print(subnet_capacity, available)
             print("Parent network can not be configured for a subnet with this number of hosts.")
             s_hosts = int(input(f"Enter the amount of hosts on subnet {s_name}: "))
 
