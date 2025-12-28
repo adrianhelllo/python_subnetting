@@ -28,7 +28,7 @@ def subnet_info_query(taken, parent_cidr):
 
     info_table = {}
     for i in range(subnets):
-        s_name = input(f"Enter the name of subnet {i + 1}: ")
+        s_name = input(f"Enter the name of the {i+1}. subnet: ")
         s_hosts = int(input(f"Enter the number of hosts on subnet {s_name}: "))
         subnet_capacity = 2 ** subnet_bits(s_hosts)
         available = 2 ** (MASK_BITS - parent_cidr) - taken
@@ -62,7 +62,12 @@ def mask_calculations(hosts):
     binary_mask = [binary_rep[i:i+8] for i in range(0, len(binary_rep), 8)]
 
     decimal_mask = [int(binary_mask[i], 2) for i in range(len(binary_mask))]
+
     return (cidr_mask, binary_mask, decimal_mask)
+
+def utility_address_calculations(parent, taken, hosts, bits):
+    netw_add = parent
+    
 
 def calculate_subnet_info(hosts, mask):
     subnet_info = {}
@@ -86,8 +91,8 @@ def main():
     for subnet, hosts in subnet_table.items():
         info = calculate_subnet_info(hosts, net_cidr_prefix)
         print(f"------- Subnet {subnet} ------".center(30))
-        print(f"The CIDR mask prefix: {info['cidr']}")
-        print(f"The binary mask: ", end="")
+        print(f"CIDR mask prefix: {info['cidr']}")
+        print(f"Binary mask: ", end="")
 
         for byte in info["b_mask"]:
             print(byte, end=" ")
@@ -98,6 +103,8 @@ def main():
         for byte in info["d_mask"]:
             print(byte, end=" ")
         print()
+
+    
 
 
 if __name__ == "__main__":
